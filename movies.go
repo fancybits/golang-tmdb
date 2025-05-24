@@ -4,16 +4,8 @@ import (
 	"fmt"
 	"net/http"
 
-	jsoniter "github.com/json-iterator/go"
+	json "github.com/goccy/go-json"
 )
-
-// BelongsToCollection type is a struct for a collection the movie is a part of.
-type BelongsToCollection struct {
-	ID           int64  `json:"id"`
-	Name         string `json:"name"`
-	PosterPath   string `json:"poster_path"`
-	BackdropPath string `json:"backdrop_path"`
-}
 
 // MovieDetails type is a struct for movie details JSON response.
 type MovieDetails struct {
@@ -21,42 +13,28 @@ type MovieDetails struct {
 	BackdropPath        string              `json:"backdrop_path"`
 	BelongsToCollection BelongsToCollection `json:"belongs_to_collection"`
 	Budget              int64               `json:"budget"`
-	Genres              []struct {
-		ID   int64  `json:"id"`
-		Name string `json:"name"`
-	} `json:"genres"`
-	Homepage            string   `json:"homepage"`
-	ID                  int64    `json:"id"`
-	IMDbID              string   `json:"imdb_id"`
-	OriginalLanguage    string   `json:"original_language"`
-	OriginalTitle       string   `json:"original_title"`
-	Overview            string   `json:"overview"`
-	Popularity          float32  `json:"popularity"`
-	PosterPath          string   `json:"poster_path"`
-	OriginCountry       []string `json:"origin_country"`
-	ProductionCompanies []struct {
-		Name          string `json:"name"`
-		ID            int64  `json:"id"`
-		LogoPath      string `json:"logo_path"`
-		OriginCountry string `json:"origin_country"`
-	} `json:"production_companies"`
-	ProductionCountries []struct {
-		Iso3166_1 string `json:"iso_3166_1"`
-		Name      string `json:"name"`
-	} `json:"production_countries"`
-	ReleaseDate     string `json:"release_date"`
-	Revenue         int64  `json:"revenue"`
-	Runtime         int    `json:"runtime"`
-	SpokenLanguages []struct {
-		Iso639_1 string `json:"iso_639_1"`
-		Name     string `json:"name"`
-	} `json:"spoken_languages"`
-	Status      string  `json:"status"`
-	Tagline     string  `json:"tagline"`
-	Title       string  `json:"title"`
-	Video       bool    `json:"video"`
-	VoteAverage float32 `json:"vote_average"`
-	VoteCount   int64   `json:"vote_count"`
+	Genres              []Genre             `json:"genres"`
+	Homepage            string              `json:"homepage"`
+	ID                  int64               `json:"id"`
+	IMDbID              string              `json:"imdb_id"`
+	OriginalLanguage    string              `json:"original_language"`
+	OriginalTitle       string              `json:"original_title"`
+	Overview            string              `json:"overview"`
+	Popularity          float32             `json:"popularity"`
+	PosterPath          string              `json:"poster_path"`
+	OriginCountry       []string            `json:"origin_country"`
+	ProductionCompanies []ProductionCompany `json:"production_companies"`
+	ProductionCountries []ProductionCountry `json:"production_countries"`
+	ReleaseDate         string              `json:"release_date"`
+	Revenue             int64               `json:"revenue"`
+	Runtime             int                 `json:"runtime"`
+	SpokenLanguages     []SpokenLanguage    `json:"spoken_languages"`
+	Status              string              `json:"status"`
+	Tagline             string              `json:"tagline"`
+	Title               string              `json:"title"`
+	Video               bool                `json:"video"`
+	VoteAverage         float32             `json:"vote_average"`
+	VoteCount           int64               `json:"vote_count"`
 	*MovieAlternativeTitlesAppend
 	*MovieChangesAppend
 	*MovieCreditsAppend
@@ -179,10 +157,10 @@ func (c *Client) GetMovieDetails(
 
 // MovieAccountStates type is a struct for account states JSON response.
 type MovieAccountStates struct {
-	ID        int64               `json:"id"`
-	Favorite  bool                `json:"favorite"`
-	Rated     jsoniter.RawMessage `json:"rated"`
-	Watchlist bool                `json:"watchlist"`
+	ID        int64           `json:"id"`
+	Favorite  bool            `json:"favorite"`
+	Rated     json.RawMessage `json:"rated"`
+	Watchlist bool            `json:"watchlist"`
 }
 
 // GetMovieAccountStates grab the following account states for a session:
@@ -252,12 +230,12 @@ type MovieChanges struct {
 	Changes []struct {
 		Key   string `json:"key"`
 		Items []struct {
-			ID            jsoniter.RawMessage `json:"id"`
-			Action        jsoniter.RawMessage `json:"action"`
-			Time          jsoniter.RawMessage `json:"time"`
-			Iso639_1      jsoniter.RawMessage `json:"iso_639_1"`
-			Value         jsoniter.RawMessage `json:"value"`
-			OriginalValue jsoniter.RawMessage `json:"original_value"`
+			ID            json.RawMessage `json:"id"`
+			Action        json.RawMessage `json:"action"`
+			Time          json.RawMessage `json:"time"`
+			Iso639_1      json.RawMessage `json:"iso_639_1"`
+			Value         json.RawMessage `json:"value"`
+			OriginalValue json.RawMessage `json:"original_value"`
 		} `json:"items"`
 	} `json:"changes"`
 }
@@ -542,20 +520,8 @@ func (c *Client) GetMovieWatchProviders(
 
 // MovieTranslations type is a struct for translations JSON response.
 type MovieTranslations struct {
-	ID           int64 `json:"id,omitempty"`
-	Translations []struct {
-		Iso639_1    string `json:"iso_639_1"`
-		Iso3166_1   string `json:"iso_3166_1"`
-		Name        string `json:"name"`
-		EnglishName string `json:"english_name"`
-		Data        struct {
-			Title    string `json:"title"`
-			Overview string `json:"overview"`
-			Runtime  int    `json:"runtime"`
-			Tagline  string `json:"tagline"`
-			Homepage string `json:"homepage"`
-		} `json:"data"`
-	} `json:"translations"`
+	ID           int64         `json:"id,omitempty"`
+	Translations []Translation `json:"translations"`
 }
 
 // GetMovieTranslations get a list of translations that have been created for a movie.
@@ -583,10 +549,8 @@ func (c *Client) GetMovieTranslations(
 
 // MovieRecommendations type is a struct for recommendations JSON response.
 type MovieRecommendations struct {
-	Page int64 `json:"page"`
 	*MovieRecommendationsResults
-	TotalPages   int64 `json:"total_pages"`
-	TotalResults int64 `json:"total_results"`
+	PaginatedResultsMeta
 }
 
 // GetMovieRecommendations get a list of recommended movies for a movie.
@@ -645,11 +609,9 @@ func (c *Client) GetMovieSimilar(
 
 // MovieReviews type is a struct for reviews JSON response.
 type MovieReviews struct {
-	ID   int64 `json:"id,omitempty"`
-	Page int64 `json:"page"`
+	ID int64 `json:"id,omitempty"`
 	*MovieReviewsResults
-	TotalPages   int64 `json:"total_pages"`
-	TotalResults int64 `json:"total_results"`
+	PaginatedResultsMeta
 }
 
 // GetMovieReviews get the user reviews for a movie.
@@ -677,11 +639,9 @@ func (c *Client) GetMovieReviews(
 
 // MovieLists type is a struct for lists JSON response.
 type MovieLists struct {
-	ID   int64 `json:"id"`
-	Page int64 `json:"page"`
+	ID int64 `json:"id"`
 	*MovieListsResults
-	TotalPages   int64 `json:"total_pages"`
-	TotalResults int64 `json:"total_results"`
+	PaginatedResultsMeta
 }
 
 // GetMovieLists get a list of lists that this movie belongs to.
@@ -737,14 +697,12 @@ func (c *Client) GetMovieLatest(
 
 // MovieNowPlaying type is a struct for now playing JSON response.
 type MovieNowPlaying struct {
-	Page int64 `json:"page"`
 	*MovieNowPlayingResults
 	Dates struct {
 		Maximum string `json:"maximum"`
 		Minimum string `json:"minimum"`
 	} `json:"dates"`
-	TotalPages   int64 `json:"total_pages"`
-	TotalResults int64 `json:"total_results"`
+	PaginatedResultsMeta
 }
 
 // GetMovieNowPlaying get a list of movies in theatres.
@@ -777,10 +735,8 @@ func (c *Client) GetMovieNowPlaying(
 
 // MoviePopular type is a struct for popular JSON response.
 type MoviePopular struct {
-	Page int64 `json:"page"`
 	*MoviePopularResults
-	TotalPages   int64 `json:"total_pages"`
-	TotalResults int64 `json:"total_results"`
+	PaginatedResultsMeta
 }
 
 // GetMoviePopular get a list of the current popular movies on TMDb.

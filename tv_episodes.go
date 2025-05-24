@@ -3,7 +3,7 @@ package tmdb
 import (
 	"fmt"
 
-	jsoniter "github.com/json-iterator/go"
+	json "github.com/goccy/go-json"
 )
 
 // TVEpisodeDetails type is a struct for details JSON response.
@@ -121,7 +121,7 @@ type TVEpisodeChanges struct {
 				Order     int64  `json:"order"`
 				CreditID  string `json:"credit_id"`
 			} `json:"original_values,omitempty"`
-			Value jsoniter.RawMessage `json:"value,omitempty"`
+			Value json.RawMessage `json:"value,omitempty"`
 		} `json:"items"`
 	} `json:"changes"`
 }
@@ -254,13 +254,13 @@ func (c *Client) GetTVEpisodeExternalIDs(
 
 // TVEpisodeImage type is a struct for a single image.
 type TVEpisodeImage struct {
-	AspectRatio float32     `json:"aspect_ratio"`
-	FilePath    string      `json:"file_path"`
-	Height      int         `json:"height"`
-	Iso6391     interface{} `json:"iso_639_1"`
-	VoteAverage float32     `json:"vote_average"`
-	VoteCount   int64       `json:"vote_count"`
-	Width       int         `json:"width"`
+	AspectRatio float32 `json:"aspect_ratio"`
+	FilePath    string  `json:"file_path"`
+	Height      int     `json:"height"`
+	Iso6391     any     `json:"iso_639_1"`
+	VoteAverage float32 `json:"vote_average"`
+	VoteCount   int64   `json:"vote_count"`
+	Width       int     `json:"width"`
 }
 
 // TVEpisodeImages type is a struct for images JSON response.
@@ -302,17 +302,8 @@ func (c *Client) GetTVEpisodeImages(
 
 // TVEpisodeTranslations type is a struct for translations JSON response.
 type TVEpisodeTranslations struct {
-	ID           int64 `json:"id,omitempty"`
-	Translations []struct {
-		Iso3166_1   string `json:"iso_3166_1"`
-		Iso639_1    string `json:"iso_639_1"`
-		Name        string `json:"name"`
-		EnglishName string `json:"english_name"`
-		Data        struct {
-			Name     string `json:"name"`
-			Overview string `json:"overview"`
-		} `json:"data"`
-	} `json:"translations"`
+	ID           int64         `json:"id,omitempty"`
+	Translations []Translation `json:"translations"`
 }
 
 // GetTVEpisodeTranslations get the translation data for an episode.

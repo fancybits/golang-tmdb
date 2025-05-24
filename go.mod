@@ -1,9 +1,14 @@
 module github.com/cyruzin/golang-tmdb
 
-go 1.13
+go 1.23
 
 require (
-	github.com/json-iterator/go v1.1.12
-	github.com/stretchr/testify v1.7.1
+	github.com/goccy/go-json v0.10.5
+	github.com/stretchr/testify v1.10.0
+)
+
+require (
+	github.com/davecgh/go-spew v1.1.1 // indirect
+	github.com/pmezard/go-difflib v1.0.0 // indirect
 	gopkg.in/yaml.v3 v3.0.1 // indirect
 )
